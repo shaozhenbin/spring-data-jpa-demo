@@ -116,8 +116,8 @@ public class OneToManyTest {
         Person person = personRepository.findByCode("002").orElseThrow(
                 () -> new RuntimeException("person code is not exists")
         );
-//        person.getAddress();
-        logger.info("person -------> {}", person.toString());
+
+        logger.debug("person -------> {}", person.toString());
 
     }
 
@@ -128,7 +128,9 @@ public class OneToManyTest {
                 () -> new RuntimeException("person code is not exists")
         );
 
-//        person.getAddress().setCity("广东深圳");
+        person.getAddressSet().stream().forEach(address -> {
+            address.setCity(address.getCity().concat("6666666"));
+        });
 
         personRepository.save(person);
     }
@@ -139,8 +141,8 @@ public class OneToManyTest {
         Person person = personRepository.findByCode("001").orElseThrow(
                 () -> new RuntimeException("person code is not exists")
         );
+        addressRepository.delete(person.getAddressSet().stream().findFirst().get());
 
-//        addressRepository.delete(person.getAddress());
     }
 
     @Test
@@ -148,10 +150,11 @@ public class OneToManyTest {
 
         List<Address> list =  addressRepository.findAll().stream().collect(Collectors.toList());
         Person person ;
-//        for (Address address : list) {
-//            logger.debug("-----------获取用户信息---------------");
-//            person = address.getPerson();
-//            logger.debug("person -------------> {}", person.toString());
-//        }
+        for (Address address : list) {
+            logger.debug("-----------获取用户信息---------------");
+            person = address.getPerson();
+            logger.debug("person -------------> {}", person.toString());
+        }
+
     }
 }
