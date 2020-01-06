@@ -14,7 +14,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.FetchType;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
  **/
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AppConfig.class})
-public class OneToOneTest {
+public class OneToManyTest {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -41,7 +43,7 @@ public class OneToOneTest {
 //    关系的维护端对关系（在多对多为中间关联表）的CRUD做操作。关系的被维护端没有该操作，不能维护关系。
 
     /**
-     * @Title 实体之间一对一关系配置如下，假如一个人对应一个地址：
+     * @Title 实体之间一对多关系配置如下，假如一个人有多个地址：
      * @Author szb
      * @Description
      * @Date 22:44 2020/1/5
@@ -61,18 +63,28 @@ public class OneToOneTest {
     @Test
     public void 保存用户_同时绑定地址() {
 
-        Address address = Address.builder()
-                .city("广东茂名")
+        Address address1 = Address.builder()
+                .city("家乡地址：广东茂名")
                 .build();
+
+        Address address2 = Address.builder()
+                .city("工作地址：福建厦门")
+                .build();
+
+        Set<Address> set = new HashSet<>();
+        set.add(address1);
+        set.add(address2);
 
         Person person = Person.builder()
                 .code("001")
                 .name("szb")
-                .address(address)
+                .addressSet(set)
                 .build();
 
         //双向绑定,不然报错
-        address.setPerson(person);
+        address1.setPerson(person);
+        address2.setPerson(person);
+
         personRepository.save(person);
     }
 
@@ -84,12 +96,16 @@ public class OneToOneTest {
         );
 
         //双向绑定,不然报错
-        Address address = Address.builder()
-                .city("广东茂名")
+        Address address1 = Address.builder()
+                .city("工作地址：广东深圳")
                 .person(person)
                 .build();
 
-        person.setAddress(address);
+        Address address2 = Address.builder()
+                .city("大学地址：江西南昌")
+                .person(person)
+                .build();
+        person.add(address1).add(address2);
 
         personRepository.save(person);
     }
@@ -100,7 +116,7 @@ public class OneToOneTest {
         Person person = personRepository.findByCode("002").orElseThrow(
                 () -> new RuntimeException("person code is not exists")
         );
-        person.getAddress();
+//        person.getAddress();
         logger.info("person -------> {}", person.toString());
 
     }
@@ -112,7 +128,7 @@ public class OneToOneTest {
                 () -> new RuntimeException("person code is not exists")
         );
 
-        person.getAddress().setCity("广东深圳");
+//        person.getAddress().setCity("广东深圳");
 
         personRepository.save(person);
     }
@@ -124,7 +140,7 @@ public class OneToOneTest {
                 () -> new RuntimeException("person code is not exists")
         );
 
-        addressRepository.delete(person.getAddress());
+//        addressRepository.delete(person.getAddress());
     }
 
     @Test
