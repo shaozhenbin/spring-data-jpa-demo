@@ -52,10 +52,11 @@ public class AppConfig implements EnvironmentAware {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource ds) {
         HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-//        jpaVendorAdapter.setGenerateDdl(true);
-        jpaVendorAdapter.setShowSql(true);
+        jpaVendorAdapter.setGenerateDdl(true);
+        jpaVendorAdapter.setShowSql(false);
         Properties jpaProperties = new Properties();
         jpaProperties.setProperty("hibernate.hbm2ddl.auto", "update");//validate,create,create-drop
+        jpaProperties.setProperty("hibernate.format_sql", "true");
         LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
         emf.setDataSource(ds);
         emf.setPackagesToScan("com.szb.jpa.domain");
