@@ -36,19 +36,28 @@ public class Person {
     private String name;
 
     /**
-     * 一对一关系
+     * 多对多关系
      */
-    @OneToMany(mappedBy = "person", cascade = {
+    @ManyToMany
+            (mappedBy = "personSet",
+            cascade = {
             CascadeType.MERGE,//级联更新
             CascadeType.PERSIST,//级联持久化实体
             CascadeType.REMOVE,//级联删除
-            CascadeType.DETACH//?
+            CascadeType.DETACH//级联游离态
 //            CascadeType.ALL 级联所有权限
-    }, fetch = FetchType.EAGER)
+    },
+            fetch = FetchType.EAGER
+    )
     private Set<Address> addressSet = new HashSet<>();
 
     public Set<Address> add(Address address) {
         this.addressSet.add(address);
         return this.addressSet;
+    }
+
+    public Set<Address> remove(Address address){
+        this.addressSet.remove(address);
+        return addressSet;
     }
 }

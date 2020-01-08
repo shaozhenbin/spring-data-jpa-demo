@@ -4,6 +4,8 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @ClassName Address
@@ -19,7 +21,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "city")
 public class Address {
 
     @Id
@@ -27,11 +29,19 @@ public class Address {
     @GenericGenerator(name = "idGenerator", strategy = "uuid")
     private String id;
 
-    @Column(name = "CITY", length = 20, nullable = false)
+    @Column(name = "CITY", length = 20, nullable = false, unique = true)
     private String city;
 
-    @ManyToOne(cascade=CascadeType.PERSIST, optional=false, fetch= FetchType.LAZY)
-    @JoinColumn(name="PERSON_ID")
-    private Person person;
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable (//关联表
+            name = "person_address" , //关联表名
+            inverseJoinColumns = @JoinColumn (name = "PERSON_ID" ),//被维护端外键
+            joinColumns = @JoinColumn (name = "ADDRESS_ID" ))//维护端外键
+    private Set<Person> personSet = new HashSet<>();
+
+    public Set<Person> add(Person person) {
+        this.personSet.add(person);
+        return this.personSet;
+    }
 
 }
