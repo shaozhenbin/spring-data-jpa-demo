@@ -79,6 +79,7 @@ public class OneToOneTest {
     @Test
     public void 绑定用户地址() {
 
+
         Person person = personRepository.findByCode("002").orElseThrow(
                 () -> new RuntimeException("person code is not exists")
         );
