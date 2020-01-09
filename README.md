@@ -96,16 +96,48 @@
 		private Set<Teacher> teachers = new HashSet<Teacher>();	
 	 }
  
- 2.jpa级联操作  
-	 CascadeType.MERGE,//级联更新
-	 CascadeType.PERSIST,//级联持久化实体
-	 CascadeType.REMOVE,//级联删除
-	 CascadeType.DETACH//?
-	 CascadeType.ALL 级联所有权限
-  
-  
-  
-  
-  
+ 2.jpa实体级联操作
+   注意：无论是实体一对一，一对多，多对一，还是多对多，由于级联操作具有可传递性，配置级联属性cascade需要根据业务需要，不能一昧地选择 CascadeType.ALL。不然后果很严重，有些数据怎么会凭空消失了尼。拿下面这个例子来说，作为关系被维护端的person,对address有级联持久化，更新
+删除，保存前刷新能力，实现效果就是字面上意思，这很容易理解。可能级联保存前刷新比较难理解，比如person同时被A,B修改，A修改后提交了，B这时
+也修改提交，person保存前每次会先更新到当前最新状态，再保存。
+	
+	@Entity
+	@Table(name = "person")
+	@Setter
+	@Getter
+	@ToString
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	public class Person {
 
+	    @Id
+	    @GeneratedValue(generator = "idGenerator")
+	    @GenericGenerator(name = "idGenerator", strategy = "uuid")
+	    private String id;
 
+	    @Column(name = "CODE", unique = true, nullable = false, length = 32)
+	    private String code;
+
+	    @Column(name = "NAME", length = 20, nullable = false)
+	    private String name;
+
+	    /**
+	     * 一对一关系
+	     */
+	    @OneToOne(mappedBy = "person", cascade = {
+		    CascadeType.MERGE,//级联更新
+		    CascadeType.PERSIST,//级联持久化实体
+		    CascadeType.REMOVE,//级联删除
+		    CascadeType.REFRESH,//级联保存前刷新
+		    CascadeType.DETACH//?
+	//            CascadeType.ALL 级联所有权限
+	    }, fetch = FetchType.LAZY)
+	    private Address address;
+	 }
+	 
+	 
+  
+  
+  
+ 
