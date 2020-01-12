@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * @ClassName Person
@@ -20,7 +21,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Person {
+public class Person implements Serializable {
 
     @Id
     @GeneratedValue(generator = "idGenerator")
@@ -40,7 +41,7 @@ public class Person {
             CascadeType.MERGE,//级联更新
             CascadeType.PERSIST,//级联持久化实体
             CascadeType.REMOVE,//级联删除
-            CascadeType.DETACH//?
+            CascadeType.DETACH//
 //            CascadeType.ALL 级联所有权限
     }, fetch = FetchType.LAZY)
     private Address address;
